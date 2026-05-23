@@ -38,6 +38,7 @@ pub mod shortlog;
 pub mod show;
 pub mod show_ref;
 pub mod tag;
+pub mod stats;
 #[cfg(all(unix, feature = "worktree-fuse"))]
 #[path = "worktree-fuse.rs"]
 pub mod worktree;

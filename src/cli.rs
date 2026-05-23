@@ -180,7 +180,8 @@ enum Commands {
     )]
     Stash(Stash),
     #[command(subcommand, about = "Large File Storage")]
-    Lfs(command::lfs::LfsCmds),
+    Stats(command::stats::StatsCmd),
+    //Lfs(command::lfs::LfsCmds),
     #[command(about = "Show commit logs", alias = "hist", alias = "history")]
     Log(command::log::LogArgs),
     #[command(about = "Summarize 'git log' output", alias = "slog")]
@@ -536,6 +537,7 @@ fn repo_not_found_error() -> CliError {
 fn command_preflight_storage(command: &Commands) -> CliResult<Option<std::path::PathBuf>> {
     match command {
         Commands::Init(_) | Commands::Clone(_) | Commands::Open(_) => Ok(None),
+        Commands::Stats(_) => Ok(None), 
         // Config global/system scopes don't require a repository.
         Commands::Config(cfg) if cfg.global || cfg.system => Ok(None),
         Commands::Code(code_args) => {
@@ -706,7 +708,7 @@ pub async fn parse_async(args: Option<&[&str]>) -> CliResult<()> {
         Commands::Status(cmd_args) => command::status::execute_safe(cmd_args, &output).await?,
         Commands::Clean(cmd_args) => command::clean::execute_safe(cmd_args, &output).await?,
         Commands::Stash(cmd) => command::stash::execute_safe(cmd, &output).await?,
-        Commands::Lfs(cmd) => command::lfs::execute_safe(cmd, &output).await?,
+        //Commands::Lfs(cmd) => command::lfs::execute_safe(cmd, &output).await?,
         Commands::Log(cmd_args) => command::log::execute_safe(cmd_args, &output).await?,
         Commands::Shortlog(cmd_args) => command::shortlog::execute_safe(cmd_args, &output).await?,
         Commands::Show(cmd_args) => command::show::execute_safe(cmd_args, &output).await?,
@@ -740,6 +742,7 @@ pub async fn parse_async(args: Option<&[&str]>) -> CliResult<()> {
         Commands::Worktree(cmd_args) => command::worktree::execute_safe(cmd_args, &output).await?,
         Commands::Cloud(cmd_args) => command::cloud::execute_safe(cmd_args, &output).await?,
         Commands::Bisect(bisect_cmd) => command::bisect::execute_safe(bisect_cmd, &output).await?,
+        Commands::Stats(cmd) => command::stats::execute_safe(&cmd, &output).await?,
     }
 
     // Check for warnings when --exit-code-on-warning is active.
